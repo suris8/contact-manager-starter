@@ -5,7 +5,13 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,6 +101,37 @@ class ContactManagerTest {
     @ParameterizedTest
     @ValueSource(strings = {"0123456789", "0123456789", "0123456789"})
     public void shouldTestContactCreationUsingValueSource(String phoneNumber) {
+        contactManager.addContact("John", "Doe", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    @DisplayName("Method Source Case - Phone Number Should Match The Required Format")
+    @ParameterizedTest
+    @MethodSource("phoneNumberList")
+    public void shouldTestContactCreationUsingMethodSource(String phoneNumber) {
+        contactManager.addContact("John", "Doe", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    private static List<String> phoneNumberList() {
+        return Arrays.asList("0123456789", "0123456798", "0123456897");
+    }
+
+    @DisplayName("CSV Source Case - Phone Number should match the required Format")
+    @ParameterizedTest
+    @CsvSource({"0123456789", "0123456789", "0123456789"})
+    public void shouldTestPhoneNumberFormatUsingCSVSource(String phoneNumber) {
+        contactManager.addContact("John", "Doe", phoneNumber);
+        assertFalse(contactManager.getAllContacts().isEmpty());
+        assertEquals(1, contactManager.getAllContacts().size());
+    }
+
+    @DisplayName("CSV Source Case - Phone Number should match the required Format")
+    @ParameterizedTest
+    @CsvFileSource(resources = "/data.csv")
+    public void shouldTestPhoneNumberFormatUsingCSVFileSource(String phoneNumber) {
         contactManager.addContact("John", "Doe", phoneNumber);
         assertFalse(contactManager.getAllContacts().isEmpty());
         assertEquals(1, contactManager.getAllContacts().size());
